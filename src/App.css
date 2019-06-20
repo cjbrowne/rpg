@@ -1,0 +1,15 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  background-color: #333;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  grid-template-columns: auto;
+}
+
+.Editor {
+  width: 50vw;
+  height:50vh;
+}

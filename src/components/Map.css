@@ -1,0 +1,22 @@
+.Map {
+    display: grid;
+    grid-row-gap: 0;
+    grid-column-gap: 0;
+}
+
+.MapTile {
+    height: 16px;
+    width: 16px;
+}
+
+.MapTile.GRASS {
+    background-color: #0f0;
+}
+
+.MapTile.WATER {
+    background-color: #00f;
+}
+
+.MapTile.ROCK {
+    background-color: #999;
+}
