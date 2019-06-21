@@ -83,6 +83,7 @@ class Map {
         this.tiles[this.playerPos.x][this.playerPos.y].player = false;
         this.tiles[x][y].player = true;
         this.playerPos = {x,y};
+        return this.tiles[x][y];
     }
 
     movePlayer(x, y) {
@@ -130,6 +131,7 @@ class Game {
         movePlayer: (x, y) => {
             if(_.isInteger(x) && _.isInteger(y)) {
                 this.world.map.movePlayer(x, y);
+                this.player.location = this.world.map.tiles[this.world.map.playerPos.x][this.world.map.playerPos.y];
                 return true;
             } else {
                 return false;
@@ -138,9 +140,9 @@ class Game {
     }
 
     constructor() {
-        this.player = new Player();
         this.world = new World();
-        this.world.map.addPlayer(this.world.map.width / 2, this.world.map.height / 2);
+        let start = this.world.map.addPlayer(this.world.map.width / 2, this.world.map.height / 2);
+        this.player = new Player(start);
     }
 
     when(evt) {

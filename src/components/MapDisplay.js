@@ -9,14 +9,14 @@ class Tile extends Component {
 
         return (
             <div className={"MapTile " + terrainClass}>
-                {_.map(this.props.objects, (obj, idx) => {
-                    return <img src={obj.logo} key={idx} alt={obj.name} />;
-                })}
                 {
                     this.props.player &&
                         (<img src="player.png" alt="player" /> ||
                         null)
                 }
+                {_.map(this.props.objects, (obj, idx) => {
+                    return <img src={obj.logo} key={idx} alt={obj.name} />;
+                })}
             </div>
         )
     }

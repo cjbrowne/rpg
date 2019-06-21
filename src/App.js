@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 
+import _ from 'lodash';
+
 import game from './game/';
 
 import MapDisplay from './components/MapDisplay';
@@ -98,6 +100,11 @@ class App extends Component {
               <div className="StatusPage">
                 <div className="HealthBar">
                   Health: {this.state.game.player.health}/{this.state.game.player.maxHealth}
+                </div>
+                <div className="Location">
+                  Location: ({this.state.game.world.map.playerPos.x},{this.state.game.world.map.playerPos.y})<br/>
+                  Terrain: {this.state.game.player.location.terrain.description}<br/>
+                  Surroundings: {_.map(this.state.game.player.location.objects, "name").join(" ") || "Open space"}
                 </div>
               </div>
             </Tab>

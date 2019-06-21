@@ -24,11 +24,12 @@ export class Player {
     health = undefined;
     maxHealth = undefined;
     inventory = null;
+    location = null;
 
-
-    constructor() {
+    constructor(start) {
         this.inventory = new Inventory();
         this.health = 100;
         this.maxHealth = 100;
+        this.location = start;
     }
 }
