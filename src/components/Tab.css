@@ -1,0 +1,37 @@
+.TabContainer {
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+}
+
+.TabSelector {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.TabSelector .TabButton {
+    background-color: #333;
+    border: none;
+    cursor: pointer;
+    padding: 1rem;
+    text-transform: capitalize;
+    color: #eee;
+}
+
+.TabSelector .TabButton.Active {
+    background-color: #555;
+}
+
+.CurrentTab {
+    flex-grow: 1;
+    overflow-y: auto;
+    width: 100%;
+    padding: 0;
+    background-color: #555;
+}
+
+.CurrentTab p {
+    padding: 1rem;
+}

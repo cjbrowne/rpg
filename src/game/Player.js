@@ -21,7 +21,14 @@ class Inventory {
 }
 
 export class Player {
+    health = undefined;
+    maxHealth = undefined;
+    inventory = null;
+
+
     constructor() {
         this.inventory = new Inventory();
+        this.health = 100;
+        this.maxHealth = 100;
     }
 }

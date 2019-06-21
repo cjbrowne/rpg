@@ -1,7 +1,6 @@
 .App {
   width: 100vw;
   height: 100vh;
-  text-align: center;
   background-color: #333;
   display: grid;
   justify-content: center;
@@ -10,6 +9,22 @@
 }
 
 .Editor {
-  width: 50vw;
-  height:50vh;
+  width: 70vw;
+  height: 50vh;
+}
+
+.GameOutput {
+  width: 70vw;
+  height: calc(16px*16);
+  display: flex;
+  align-items: stretch;
+}
+
+.GameOutput .TabContainer {
+  flex-grow: 1;
+  height: 100%;
+}
+
+.StatusPage {
+  padding: 1rem;
 }

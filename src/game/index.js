@@ -1,7 +1,7 @@
 import { When } from "./When";
 import { Player } from "./Player";
 
-// import _ from 'lodash';
+import _ from 'lodash';
 
 import { perlin } from './randutil';
 
@@ -128,7 +128,12 @@ class Game {
 
     publicApi = {
         movePlayer: (x, y) => {
-            this.movePlayer(x, y);
+            if(_.isInteger(x) && _.isInteger(y)) {
+                this.world.map.movePlayer(x, y);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -170,10 +175,6 @@ class Game {
 
     stop() {
         this.running = false;
-    }
-
-    movePlayer(x, y) {
-        this.world.map.movePlayer(x, y);
     }
 }
 

@@ -6,17 +6,27 @@ import game from './game/';
 import MapDisplay from './components/MapDisplay';
 
 import AceEditor from 'react-ace';
+import { Tabs, Tab } from './components/Tabs';
 
 require('brace/theme/dracula');
 require('brace/mode/javascript');
-
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       game,
-      code: ""
+      code: "",
+      page: "status"
+    }
+  }
+
+  componentDidMount() {
+    let code = localStorage.getItem("code");
+    if(code) {
+      this.setState({
+        code
+      });
     }
   }
 
@@ -56,13 +66,43 @@ class App extends Component {
       this.setState({
         code
       });
+      localStorage.setItem("code", code);
     }
     
     return (
       <div className="App">
-        <MapDisplay
-          tiles={this.state.game.world.map.tiles}
-        />
+        <div className="GameOutput">
+          <MapDisplay
+            tiles={this.state.game.world.map.tiles}
+          />
+          <Tabs
+            page={this.state.page}
+            onTabChange={page => this.setState({page})}
+          >
+            <Tab page="instructions">
+              <p>
+              Your code must evaluate to a function or lambda which will be called every
+              step (every frame) with two arguments.  The first argument is 'game', which
+              we will get onto in a moment.  The second argument is 'timestamp', which is
+              simply a high-resolution timer measuring milliseconds with a sub-millisecond
+              resolution (i.e floating point millisecond timer).
+              </p>
+              <p>
+                The 'game' argument contains an API for controlling the player as well as
+                getting information about the environment.  The API is not currently well
+                documented.  If you want to contribute API documentation, please see the git
+                repo at <a href="https://github.com/cjbrowne/rpg">GitHub</a> and pitch in!
+              </p>
+            </Tab>
+            <Tab page="status">
+              <div className="StatusPage">
+                <div className="HealthBar">
+                  Health: {this.state.game.player.health}/{this.state.game.player.maxHealth}
+                </div>
+              </div>
+            </Tab>
+          </Tabs>
+        </div>
         <AceEditor 
           mode="javascript"
           theme="dracula"
@@ -71,6 +111,7 @@ class App extends Component {
           height=""
           onChange={updateCode}
           value={this.state.code}
+          highlightActiveLine={false}
         />
         <div className="Controls">
           <button onClick={runGame}>
