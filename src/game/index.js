@@ -8,7 +8,6 @@ import { perlin, randInt } from './randutil';
 import {
     generate2d
 } from './arrayutil';
-import { ENOTEMPTY } from "constants";
 
 class MapObject {
     logo = "unknown.png";
@@ -171,7 +170,6 @@ class World {
         _.each(_.range(randInt(5,15)), () => {
             en.push(new Enemy(randInt(0, this.map.width-1),randInt(0,this.map.height-1)));
         });
-        console.log(en);
         return en;
     }
 

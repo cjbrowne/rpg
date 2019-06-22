@@ -110,6 +110,8 @@ class App extends Component {
             mapOriginX: Math.min(this.state.mapOriginX+amount, this.state.game.world.map.width-17)
           })
           break;
+        default: 
+          break;
       }
     };
 
@@ -126,8 +128,10 @@ class App extends Component {
           case "ArrowLeft":
             scrollMap("left");
             break;
-            case "ArrowRight":
+          case "ArrowRight":
             scrollMap("right");
+            break;
+          default:
             break;
         }
       });
@@ -156,6 +160,7 @@ class App extends Component {
             {
               _.map(["up","left","right","down"], (dir) => {
                 return (<button 
+                  key={dir}
                   onClick={() => scrollMap(dir)} 
                   className={_.capitalize(dir)}>
                     <FontAwesomeIcon icon={icons[dir]} />

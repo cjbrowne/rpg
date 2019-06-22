@@ -31,9 +31,6 @@ class Tile extends Component {
 }
 
 export default class MapDisplay extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         let allTiles = this.props.tiles;
@@ -50,13 +47,13 @@ export default class MapDisplay extends Component {
             }}>
                 <div className="Gutter Origin"></div>
                 {_.map(_.range(this.props.originX, this.props.originX + 16), (x) => {
-                    return <div className="Gutter X" style={{
+                    return <div className="Gutter X" key={"gutter"+x} style={{
                         gridRow: 1,
                         gridColumn: (x + 2)
                     }}>{x}</div>
                 })}
                 {_.map(_.range(this.props.originY, this.props.originY + 16), (y) => {
-                    return <div className="Gutter Y" style={{
+                    return <div className="Gutter Y" key={"gutter"+y} style={{
                         gridRow: (y + 2),
                         gridColumn: 1 
                     }}>{y}</div>;
