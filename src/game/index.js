@@ -36,9 +36,9 @@ class Tile {
         this.x = x;
         this.y = y;
         let terrain = WATER;
-        if(seed < 0.2) {
+        if(seed > -0.6) {
             terrain = GRASS;
-        } else if (seed < 0.5) {
+        } if (seed > 0.8) {
             terrain = ROCK;
         }
 
@@ -69,9 +69,9 @@ class Map {
     width = 0;
     height = 0;
 
-    constructor(seed = -1, width = 16, height = 16) {
+    constructor(seed = -1, width = 256, height = 256) {
         this.tiles = generate2d(width, height, (x, y) => {
-            let n = perlin(x, y);
+            let n = perlin(seed, x, y);
 
             return new Tile(n, x, y);
         });
@@ -115,8 +115,8 @@ class Map {
 
 class World {
     map = null;
-    constructor() {
-        this.map = new Map();
+    constructor(seed) {
+        this.map = new Map(seed);
     }
 }
 
@@ -139,8 +139,8 @@ class Game {
         }
     }
 
-    constructor() {
-        this.world = new World();
+    constructor(seed) {
+        this.world = new World(seed);
         let start = this.world.map.addPlayer(this.world.map.width / 2, this.world.map.height / 2);
         this.player = new Player(start);
     }

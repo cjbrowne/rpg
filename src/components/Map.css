@@ -7,6 +7,7 @@
 .MapTile {
     height: 16px;
     width: 16px;
+    font-size: 4pt;
 }
 
 .MapTile.GRASS {

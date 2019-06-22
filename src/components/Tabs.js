@@ -32,7 +32,7 @@ export class Tabs extends Component {
                     {
                         _.find(this.props.children, (child) => {
                             if(child.type === Tab) {
-                                return this.props.page == child.props.page;
+                                return this.props.page === child.props.page;
                             }
                         }) || null
                     }

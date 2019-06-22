@@ -3,12 +3,14 @@ import React, { Component } from 'react';
 import './Map.css';
 import _ from 'lodash';
 
+import { crop } from '../game/arrayutil';
+
 class Tile extends Component {
     render() {
         let terrainClass = this.props.terrain.description;
 
         return (
-            <div className={"MapTile " + terrainClass}>
+            <div className={"MapTile " + terrainClass} style={this.props.style}>
                 {
                     this.props.player &&
                         (<img src="player.png" alt="player" /> ||
@@ -25,25 +27,32 @@ class Tile extends Component {
 export default class MapDisplay extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
     }
 
     render() {
+        let allTiles = this.props.tiles;
+
+        let displayedTiles = crop(allTiles, this.props.originX, this.props.originY);
+
         return (
             <div className="Map"
             style={{
-                gridTemplateColumns: _.repeat("auto ", this.props.tiles.length),
-                width: (this.props.tiles.length * 16) + "px"
+                gridTemplateColumns: _.repeat("auto ", displayedTiles.length),
+                width: (displayedTiles.length * 16) + "px"
             }}>
-                {_.map(this.props.tiles, (tileRow) => {
+                {_.map(displayedTiles, (tileRow) => {
                     return _.map(tileRow, (tile) => { 
                         return (<Tile 
+                            style={{
+                                gridColumn: tile.x + 1,
+                                gridRow: tile.y + 1
+                            }}
                             key={tile.x+tile.y}
                             terrain={tile.terrain}
                             objects={tile.objects}
                             player={tile.player}
+                            x={tile.x}
+                            y={tile.y}
                             />);
                     });
                 })}

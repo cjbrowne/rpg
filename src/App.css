@@ -3,14 +3,52 @@
   height: 100vh;
   background-color: #333;
   display: grid;
-  justify-content: center;
-  align-content: center;
-  grid-template-columns: auto;
+  justify-content: space-evenly;
+  align-content: space-evenly;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto;
+}
+
+.LeftColumn {
+  grid-column: 1;
+}
+
+.MapControls {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: auto auto auto;
+  padding-top: 15vh;
+}
+
+.MapControls .CenterPlayer {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.MapControls .Up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.MapControls .Left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.MapControls .Right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.MapControls .Down {
+  grid-column: 2;
+  grid-row: 3;
 }
 
 .Editor {
   width: 70vw;
   height: 50vh;
+  grid-column: 2;
 }
 
 .GameOutput {
@@ -18,6 +56,11 @@
   height: calc(16px*16);
   display: flex;
   align-items: stretch;
+  grid-column: 2;
+}
+
+.Controls {
+  grid-column: 2;
 }
 
 .GameOutput .TabContainer {
