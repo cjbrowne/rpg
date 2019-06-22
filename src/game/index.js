@@ -3,11 +3,12 @@ import { Player } from "./Player";
 
 import _ from 'lodash';
 
-import { perlin } from './randutil';
+import { perlin, randInt } from './randutil';
 
 import {
     generate2d
 } from './arrayutil';
+import { ENOTEMPTY } from "constants";
 
 class MapObject {
     logo = "unknown.png";
@@ -30,6 +31,7 @@ const ROCK = Symbol('ROCK');
 
 class Tile {
     player = false;
+    enemy = null;
 
     constructor(seed, x, y) {
         this.height = seed;
@@ -61,6 +63,10 @@ class Tile {
 
         this.terrain = terrain;
     }
+    
+    addEnemy(enemy) {
+        this.enemy = enemy;
+    }
 }
 
 class Map {
@@ -84,6 +90,12 @@ class Map {
         this.tiles[x][y].player = true;
         this.playerPos = {x,y};
         return this.tiles[x][y];
+    }
+
+    addEnemies(enemies) {
+        _.each(enemies, (enemy) => {
+            this.tiles[enemy.location.x][enemy.location.y].addEnemy(enemy);
+        })
     }
 
     movePlayer(x, y) {
@@ -113,10 +125,58 @@ class Map {
     }
 }
 
+class Enemy {
+    location = {
+        x: 0,
+        y: 0
+    }
+    health = 0;
+    maxHealth = 0;
+
+    constructor(x = 0, y = 0, health = 100, maxHealth = 100) {
+        this.location.x = x;
+        this.location.y = y;
+        this.health = 100;
+        this.maxHealth = 100;
+    }
+
+    damage(amount = 0) {
+        this.health -= amount;
+        if(this.health <= 0) {
+            this.health = 0;
+        }
+    }
+    
+    static fromJSON(json) {
+        return new Enemy(json.x, json.y, json.health, json.maxHealth);
+    }
+}
+
 class World {
     map = null;
+    enemies = [];
     constructor(seed) {
         this.map = new Map(seed);
+        let e = localStorage.getItem("enemies");
+        if(e) {
+            this.enemies = _.map(e, (enemy) => Enemy.fromJSON(enemy));
+        } else {
+            this.enemies = this.spawnEnemies();
+        }
+        this.map.addEnemies(this.enemies);
+    }
+
+    spawnEnemies() {
+        let en = [];
+        _.each(_.range(randInt(5,15)), () => {
+            en.push(new Enemy(randInt(0, this.map.width-1),randInt(0,this.map.height-1)));
+        });
+        console.log(en);
+        return en;
+    }
+
+    save() {
+        localStorage.setItem("enemies", JSON.stringify(this.enemies));
     }
 }
 
@@ -152,6 +212,10 @@ class Game {
         return w;
     }
 
+    save() {
+        this.world.save();
+    }
+
     step(timestamp) {
         try {
             this.playerFunc(this.publicApi, timestamp);
@@ -161,6 +225,9 @@ class Game {
         this.appComponent.setState({
             game: this
         });
+
+        this.save();
+
         if(this.running) {
             requestAnimationFrame((timestamp) => this.step(timestamp));
         }

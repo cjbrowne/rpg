@@ -7,6 +7,12 @@ let perlin = (seed, x, y) => {
     return simplex.noise2D(x, y);
 }
 
+let randInt = (min = 0, max = Number.MAX_SAFE_INTEGER) => {
+    let fl = Math.random();
+    return Math.floor(fl * (max - min)) + min;
+}
+
 export { 
-    perlin
+    perlin,
+    randInt
 };

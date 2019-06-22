@@ -4,6 +4,22 @@
     grid-column-gap: 0;
 }
 
+.Map .Gutter {
+    font-size: 4pt;
+    background-color: #999;
+    overflow: hidden;
+}
+
+.Map .Gutter.X {
+    width: 16px;
+    height: 8px;
+}
+
+.Map .Gutter.Y {
+    width: 8px;
+    height: 16px;
+}
+
 .MapTile {
     height: 16px;
     width: 16px;

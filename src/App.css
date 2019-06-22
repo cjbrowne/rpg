@@ -52,8 +52,8 @@
 }
 
 .GameOutput {
-  width: 70vw;
-  height: calc(16px*16);
+  /* width: 70vw; */
+  height: calc(17px*16);
   display: flex;
   align-items: stretch;
   grid-column: 2;

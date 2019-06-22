@@ -15,6 +15,8 @@ import { Tabs, Tab } from './components/Tabs';
 require('brace/theme/dracula');
 require('brace/mode/javascript');
 
+let keyboardInputSetup = false;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -65,6 +67,7 @@ class App extends Component {
         console.error(x);
       }
       game.appComponent = this;
+
       /* eslint-enable */
       requestAnimationFrame((timestamp) => game.step(timestamp));
     }
@@ -109,6 +112,28 @@ class App extends Component {
           break;
       }
     };
+
+    if(!keyboardInputSetup) {
+
+      window.addEventListener("keydown", (ev) => {
+        switch(ev.key) {
+          case "ArrowDown":
+            scrollMap("down");
+            break;
+          case "ArrowUp":
+            scrollMap("up");
+            break;
+          case "ArrowLeft":
+            scrollMap("left");
+            break;
+            case "ArrowRight":
+            scrollMap("right");
+            break;
+        }
+      });
+
+      keyboardInputSetup = true;
+    }    
 
     let icons = {
       "up": faAngleUp,

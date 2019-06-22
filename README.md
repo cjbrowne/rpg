@@ -8,9 +8,9 @@ can only write JavaScript code in order to play the game.
 
 The expression the user types must evaluate to a function, which
 will be executed every "turn".  The function takes two arguments:
-player - an API that allows you to control the player
+game - an API that allows you to control the game
 timestamp - a high-resolution timestamp
 
-# Player API
-player.move(x, y): move the player by the delta x, y (e.g -1, 1 will move one tile left and one tile down).
+## Game object
+game.movePlayer(x, y): move the player by the delta x, y (e.g -1, 1 will move one tile left and one tile down).
 
