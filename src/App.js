@@ -102,12 +102,12 @@ class App extends Component {
           break;
         case "down":
           this.setState({
-            mapOriginY: Math.min(this.state.mapOriginY+amount, this.state.game.world.map.height-17)
+            mapOriginY: Math.min(this.state.mapOriginY+amount, this.state.game.world.map.height-16)
           })
           break;
         case "right":
           this.setState({
-            mapOriginX: Math.min(this.state.mapOriginX+amount, this.state.game.world.map.width-17)
+            mapOriginX: Math.min(this.state.mapOriginX+amount, this.state.game.world.map.width-16)
           })
           break;
         default: 
@@ -147,10 +147,13 @@ class App extends Component {
     }
 
     let centerPlayer = () => {
+      let {x,y} = this.state.game.world.map.playerPos;
+      let {width,height} = this.state.game.world.map;
+
       this.setState({
-        mapOriginX: this.state.game.world.map.playerPos.x - 8,
-        mapOriginY: this.state.game.world.map.playerPos.y - 8
-      })
+        mapOriginX: Math.min(width - 16, Math.max(x - 8, 0)),
+        mapOriginY: Math.min(height - 16, Math.max(y - 8, 0))
+      });
     }
     
     return (
@@ -209,6 +212,9 @@ class App extends Component {
                   Location: ({this.state.game.world.map.playerPos.x},{this.state.game.world.map.playerPos.y})<br/>
                   Terrain: {this.state.game.player.location.terrain.description}<br/>
                   Surroundings: {_.map(this.state.game.player.location.objects, "name").join(" ") || "Open space"}
+                </div>
+                <div className="Combat">
+                  {this.state.game.player.underAttack ? <div className="AttackWarning">Under Attack!!!</div> : null}
                 </div>
               </div>
             </Tab>

@@ -25,11 +25,15 @@ export class Player {
     maxHealth = undefined;
     inventory = null;
     location = null;
+    underAttack = false;
+    armor = 0;
 
     constructor(start) {
         this.inventory = new Inventory();
         this.health = 100;
         this.maxHealth = 100;
         this.location = start;
+        this.underAttack = false;
+        this.armor = 100;
     }
 }

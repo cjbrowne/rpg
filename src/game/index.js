@@ -3,7 +3,7 @@ import { Player } from "./Player";
 
 import _ from 'lodash';
 
-import { perlin, randInt } from './randutil';
+import { perlin, randInt, generateEnemyName } from './randutil';
 
 import {
     generate2d
@@ -73,6 +73,7 @@ class Map {
     playerPos = {x:0, y:0};
     width = 0;
     height = 0;
+    playerTile = null;
 
     constructor(seed = -1, width = 256, height = 256) {
         this.tiles = generate2d(width, height, (x, y) => {
@@ -88,6 +89,7 @@ class Map {
         this.tiles[this.playerPos.x][this.playerPos.y].player = false;
         this.tiles[x][y].player = true;
         this.playerPos = {x,y};
+        this.playerTile = this.tiles[x][y];
         return this.tiles[x][y];
     }
 
@@ -121,6 +123,7 @@ class Map {
             x: newX,
             y: newY
         };
+        this.playerTile = this.tiles[newX][newY];
     }
 }
 
@@ -131,12 +134,16 @@ class Enemy {
     }
     health = 0;
     maxHealth = 0;
+    level = 0;
+    name = "";
 
-    constructor(x = 0, y = 0, health = 100, maxHealth = 100) {
+    constructor(x = 0, y = 0, health = 100, maxHealth = 100, level = 1, name) {
         this.location.x = x;
         this.location.y = y;
-        this.health = 100;
-        this.maxHealth = 100;
+        this.health = health;
+        this.maxHealth = maxHealth;
+        this.level = level;
+        this.name = name || generateEnemyName();
     }
 
     damage(amount = 0) {
@@ -145,9 +152,23 @@ class Enemy {
             this.health = 0;
         }
     }
+
+    attack(player) {
+        let baseDamage = randInt(5,50);
+        let damage = Math.max(0, (this.level * baseDamage) - (player.armor * 0.15));
+        
+        console.log(`Enemy ${this.name} did ${damage} damage to player!`);
+
+        player.health = Math.max(player.health - damage, 0);
+        if(player.health <= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     static fromJSON(json) {
-        return new Enemy(json.x, json.y, json.health, json.maxHealth);
+        return new Enemy(json.location.x, json.location.y, json.health, json.maxHealth, json.level, json.name);
     }
 }
 
@@ -158,7 +179,7 @@ class World {
         this.map = new Map(seed);
         let e = localStorage.getItem("enemies");
         if(e) {
-            this.enemies = _.map(e, (enemy) => Enemy.fromJSON(enemy));
+            this.enemies = _.map(JSON.parse(e), (enemy) => Enemy.fromJSON(enemy));
         } else {
             this.enemies = this.spawnEnemies();
         }
@@ -174,6 +195,7 @@ class World {
     }
 
     save() {
+        localStorage.setItem("playerPos", JSON.stringify(this.map.playerPos));
         localStorage.setItem("enemies", JSON.stringify(this.enemies));
     }
 }
@@ -184,12 +206,14 @@ class Game {
     player = null;
     map = null;
     running = false;
+    gameOver = false;
 
     publicApi = {
         movePlayer: (x, y) => {
             if(_.isInteger(x) && _.isInteger(y)) {
                 this.world.map.movePlayer(x, y);
                 this.player.location = this.world.map.tiles[this.world.map.playerPos.x][this.world.map.playerPos.y];
+                this.player.underAttack = (this.player.location.enemy !== null);
                 return true;
             } else {
                 return false;
@@ -199,8 +223,18 @@ class Game {
 
     constructor(seed) {
         this.world = new World(seed);
-        let start = this.world.map.addPlayer(this.world.map.width / 2, this.world.map.height / 2);
+        let playerPos = localStorage.getItem("playerPos");
+        if(playerPos) {
+            playerPos = JSON.parse(playerPos);
+        } else {
+            playerPos = {
+                x: this.world.map.width / 2,
+                y: this.world.map.height / 2
+            };
+        }
+        let start = this.world.map.addPlayer(playerPos.x, playerPos.y);
         this.player = new Player(start);
+        this.player.underAttack = (this.world.map.playerTile.enemy !== null);
     }
 
     when(evt) {
@@ -214,6 +248,10 @@ class Game {
         this.world.save();
     }
 
+    stepCombat() {
+        this.gameOver = this.world.map.playerTile.enemy.attack(this.player);
+    }
+
     step(timestamp) {
         try {
             this.playerFunc(this.publicApi, timestamp);
@@ -223,6 +261,11 @@ class Game {
         this.appComponent.setState({
             game: this
         });
+
+        if(this.world.map.playerTile.enemy !== null) {
+            this.player.underAttack = true;
+            this.stepCombat();
+        }
 
         this.save();
 
