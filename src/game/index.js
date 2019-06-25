@@ -267,6 +267,10 @@ class Game {
             this.stepCombat();
         }
 
+        if(this.appComponent.state.followPlayer) {
+            this.appComponent.centerPlayer();
+        }
+
         this.save();
 
         if(this.running) {

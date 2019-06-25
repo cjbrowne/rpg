@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight, faAngleUp, faAngleDown, faCrosshairs } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight, faAngleUp, faAngleDown, faCrosshairs, faCompass } from '@fortawesome/free-solid-svg-icons';
+import { faCompass as farCompass } from '@fortawesome/free-regular-svg-icons';
 import './App.css';
 
 import _ from 'lodash';
@@ -40,6 +41,7 @@ class App extends Component {
   }
 
   render () {
+
     let runGame = () => {
       try {
       // quiet eslint down because we are using this deliberately and carefully
@@ -145,16 +147,6 @@ class App extends Component {
       "right": faAngleRight,
       "down": faAngleDown
     }
-
-    let centerPlayer = () => {
-      let {x,y} = this.state.game.world.map.playerPos;
-      let {width,height} = this.state.game.world.map;
-
-      this.setState({
-        mapOriginX: Math.min(width - 16, Math.max(x - 8, 0)),
-        mapOriginY: Math.min(height - 16, Math.max(y - 8, 0))
-      });
-    }
     
     return (
       <div className="App">
@@ -171,11 +163,19 @@ class App extends Component {
               }) 
             }
             <button
-              onClick={centerPlayer}
+              onClick={this.centerPlayer.bind(this)}
               className="CenterPlayer"
             >
               <FontAwesomeIcon icon={faCrosshairs} />
             </button>
+            <button
+              onClick={()=>{this.setState({followPlayer:!this.state.followPlayer})}}
+              className="FollowPlayer">
+                <FontAwesomeIcon 
+                  icon={this.state.followPlayer ? faCompass : farCompass}
+                  
+                  />
+              </button>
           </div>
         </div>
         <div className="GameOutput">
@@ -252,6 +252,15 @@ class App extends Component {
         </div>
       </div>
     );
+  }
+
+  centerPlayer() {
+    let { x, y } = this.state.game.world.map.playerPos;
+    let { width, height } = this.state.game.world.map;
+    this.setState({
+      mapOriginX: Math.min(width - 16, Math.max(x - 8, 0)),
+      mapOriginY: Math.min(height - 16, Math.max(y - 8, 0))
+    });
   }
 }
 
