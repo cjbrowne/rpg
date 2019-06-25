@@ -9,6 +9,8 @@ import {
     generate2d
 } from './arrayutil';
 
+import EventDispatcher from './EventDispatcher';
+
 class MapObject {
     logo = "unknown.png";
     name = "map object";
@@ -202,11 +204,14 @@ class World {
 
 let listeners = {};
 
+const ATTACK_ENERGY = 15;
+
 class Game {
     player = null;
     map = null;
     running = false;
     gameOver = false;
+    eventDispatcher = null;
 
     publicApi = {
         movePlayer: (x, y) => {
@@ -218,6 +223,17 @@ class Game {
             } else {
                 return false;
             }
+        },
+        swingWeapon: () => {
+            if(this.player.energy >= ATTACK_ENERGY) {
+                if(this.player.location.enemy !== null) {
+                    this.player.location.enemy.takeDamage(this.player.swingWeapon());
+                }
+                this.player.energy = Math.max(0, this.player.energy - ATTACK_ENERGY);
+            }
+        },
+        when: (evt) => {
+            return this.when(evt);
         }
     }
 
@@ -235,13 +251,12 @@ class Game {
         let start = this.world.map.addPlayer(playerPos.x, playerPos.y);
         this.player = new Player(start);
         this.player.underAttack = (this.world.map.playerTile.enemy !== null);
+
+        this.eventDispatcher = new EventDispatcher();
     }
 
     when(evt) {
-        let w = new When(evt);
-        listeners[evt] = listeners[evt] || [];
-        listeners[evt].push(w);
-        return w;
+        return listeners[evt] || (listeners[evt] = new When(evt));
     }
 
     save() {
@@ -253,6 +268,8 @@ class Game {
     }
 
     step(timestamp) {
+        listeners = {};
+
         try {
             this.playerFunc(this.publicApi, timestamp);
         } catch (x) {
@@ -263,6 +280,9 @@ class Game {
         });
 
         if(this.world.map.playerTile.enemy !== null) {
+            if(!this.player.underAttack) {
+                this.eventDispatcher.dispatch("enemy.appears", this.player.location.enemy);
+            }
             this.player.underAttack = true;
             this.stepCombat();
         }
@@ -270,6 +290,10 @@ class Game {
         if(this.appComponent.state.followPlayer) {
             this.appComponent.centerPlayer();
         }
+
+        this.player.step();
+
+        this.eventDispatcher.flush(listeners);
 
         this.save();
 

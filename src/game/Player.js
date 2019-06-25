@@ -23,6 +23,8 @@ class Inventory {
 export class Player {
     health = undefined;
     maxHealth = undefined;
+    energy = undefined;
+    maxEnergy = undefined;
     inventory = null;
     location = null;
     underAttack = false;
@@ -32,8 +34,18 @@ export class Player {
         this.inventory = new Inventory();
         this.health = 100;
         this.maxHealth = 100;
+        this.energy = 100;
+        this.maxEnergy = 100;
         this.location = start;
         this.underAttack = false;
         this.armor = 100;
+        
+        this.strength = 1;
+        this.stamina = 1;
+        this.agility = 1;
+    }
+
+    step () {
+        this.energy = Math.min(this.maxEnergy, this.energy + (this.agility * 10));
     }
 }

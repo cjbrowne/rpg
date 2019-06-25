@@ -208,6 +208,9 @@ class App extends Component {
                 <div className="HealthBar">
                   Health: {this.state.game.player.health}/{this.state.game.player.maxHealth}
                 </div>
+                <div className="EnergyBar">
+                  Energy: {this.state.game.player.energy}/{this.state.game.player.maxEnergy}
+                </div>
                 <div className="Location">
                   Location: ({this.state.game.world.map.playerPos.x},{this.state.game.world.map.playerPos.y})<br/>
                   Terrain: {this.state.game.player.location.terrain.description}<br/>
