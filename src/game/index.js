@@ -106,6 +106,9 @@ class Map {
     }
 
     movePlayer(x, y) {
+        x = Math.floor(x);
+        y = Math.floor(y);
+
         let oldX = this.playerPos.x;
         let oldY = this.playerPos.y;
         let newX, newY;
@@ -194,7 +197,7 @@ class World {
 
     spawnEnemies() {
         let en = [];
-        _.each(_.range(randInt(5,15)), () => {
+        _.each(_.range(randInt(50,150)), () => {
             en.push(new Enemy(randInt(0, this.map.width-1),randInt(0,this.map.height-1)));
         });
         return en;
@@ -214,17 +217,16 @@ class Game {
     player = null;
     map = null;
     running = false;
-    gameOver = false;
     eventDispatcher = null;
 
     publicApi = {
         movePlayer: (x, y) => {
-            if(_.isInteger(x) && _.isInteger(y)) {
+            if(_.isNumber(x) && _.isNumber(y)) {
                 let v = new Vector2(x, y);
-                console.log(`Player trying to move at a rate of ${v.magnitude}`, v);
                 if(v.magnitude > Player.MAX_SPEED) {
-                    v = v.normalize().magnify(Player.MAX_SPEED).floor();
-                    console.log(`Moving player ${v.magnitude} instead`);
+                    v = v.normalize()
+                        .magnify(Player.MAX_SPEED)
+                        .floor();
                 }
                 this.world.map.movePlayer(v.x, v.y);
                 this.player.location = this.world.map.tiles[this.world.map.playerPos.x][this.world.map.playerPos.y];
@@ -244,10 +246,17 @@ class Game {
         },
         when: (evt) => {
             return this.when(evt);
+        },
+        setName: (name) => {
+            this.player.name = name;
         }
     }
 
-    constructor(seed) {
+    get gameOver() {
+        return this.player.health <= 0;
+    }
+
+    constructor(appComponent, seed) {
         this.world = new World(seed);
         let playerPos = localStorage.getItem("playerPos");
         if(playerPos) {
@@ -260,9 +269,12 @@ class Game {
         }
         let start = this.world.map.addPlayer(playerPos.x, playerPos.y);
         this.player = new Player(start);
+        this.player.load();
+        this.player.location = this.world.map.tiles[playerPos.x][playerPos.y];
         this.player.underAttack = (this.world.map.playerTile.enemy !== null);
 
         this.eventDispatcher = new EventDispatcher();
+        this.appComponent = appComponent;
     }
 
     when(evt) {
@@ -270,24 +282,62 @@ class Game {
     }
 
     save() {
+        this.player.save();
         this.world.save();
     }
 
+    reset() {
+        this.appComponent.setState({
+            resetting: true
+        }, () => {
+            _.map(["playerPos", "player", "enemies"], localStorage.removeItem.bind(localStorage));
+
+            let seed = localStorage.getItem("seed");
+    
+            this.world = new World(seed);
+            let playerPos = {
+                x: this.world.map.width / 2,
+                y: this.world.map.height / 2
+            };
+            let start = this.world.map.addPlayer(playerPos.x, playerPos.y);
+            this.player = new Player(start);
+            this.player.location = this.world.map.tiles[playerPos.x][playerPos.y];
+            this.player.underAttack = (this.world.map.playerTile.enemy !== null);
+    
+            this.save();
+    
+            this.appComponent.setState({
+                game: this,
+                resetting: false
+            });
+        });
+    }
+
     stepCombat() {
-        this.gameOver = this.world.map.playerTile.enemy.attack(this.player);
+        this.world.map.playerTile.enemy.attack(this.player);
+    }
+
+    decorateApi() {
+        _.merge(this.publicApi, {
+            underAttack: this.player.underAttack
+        });
+    }
+
+    setPlayerFunc(playerFunc) {
+        this.playerFunc = playerFunc;
     }
 
     step(timestamp) {
         listeners = {};
+
+        this.decorateApi();
 
         try {
             this.playerFunc(this.publicApi, timestamp);
         } catch (x) {
             console.error(x);
         }
-        this.appComponent.setState({
-            game: this
-        });
+        
 
         if(this.world.map.playerTile.enemy !== null) {
             if(!this.player.underAttack) {
@@ -305,16 +355,19 @@ class Game {
 
         this.eventDispatcher.flush(listeners);
 
+
+        this.appComponent.setState({
+            game: this
+        });
         this.save();
 
-        if(this.running) {
+        if(this.running && !this.gameOver) {
             requestAnimationFrame((timestamp) => this.step(timestamp));
         }
     }
 
-    run(appComponent, playerFunc) {
+    run(playerFunc) {
         this.playerFunc = playerFunc;
-        this.appComponent = appComponent;
         if(!this.running) {
             this.running = true;
             requestAnimationFrame((timestamp) => this.step(timestamp));
@@ -328,4 +381,4 @@ class Game {
 
 
 
-export default new Game();
+export default Game;

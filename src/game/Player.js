@@ -29,6 +29,8 @@ export class Player {
     location = null;
     underAttack = false;
     armor = 0;
+    level = 0;
+    name = "Unknown Warrior";
 
     static MAX_SPEED = 15;
 
@@ -45,6 +47,29 @@ export class Player {
         this.strength = 1;
         this.stamina = 1;
         this.agility = 1;
+        this.level = 1;
+    }
+
+    load() {
+        let p = localStorage.getItem("player");
+        if(!p) return;
+        p = JSON.parse(p);
+        this.health = p.health;
+        this.maxHealth = p.maxHealth;
+        this.energy = p.energy;
+        this.maxEnergy = p.maxEnergy;
+        this.underAttack = p.underAttack;
+        this.armor = p.armor;
+
+        this.strength = p.strength;
+        this.stamina = p.stamina;
+        this.agility = p.agility;
+        this.level = p.level;
+        this.name = p.name;
+    }
+
+    save() {
+        localStorage.setItem("player", JSON.stringify(this));
     }
 
     step () {

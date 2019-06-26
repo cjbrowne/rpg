@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGhost } from '@fortawesome/free-solid-svg-icons';
+
 import './Map.css';
 import _ from 'lodash';
 
@@ -11,7 +14,10 @@ class Tile extends Component {
         let maybeEnemy = null;
 
         if(this.props.enemy) {
-            maybeEnemy = `Enemy: ${this.props.enemy.health}/${this.props.enemy.maxHealth}`;
+            maybeEnemy = <FontAwesomeIcon 
+                icon={faGhost}
+                className="Enemy"
+            />;
         }
 
         return (

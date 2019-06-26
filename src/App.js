@@ -6,8 +6,9 @@ import './App.css';
 
 import _ from 'lodash';
 
-import game from './game/index';
+import Game from './game/index';
 
+import StatusPage from './components/StatusPage';
 import MapDisplay from './components/MapDisplay';
 
 import AceEditor from 'react-ace';
@@ -22,11 +23,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      game,
+      game: null,
       code: "",
       page: "status",
       mapOriginX: 0,
-      mapOriginY: 0
+      mapOriginY: 0,
+      resetting: false
     }
   }
 
@@ -34,13 +36,25 @@ class App extends Component {
     let code = localStorage.getItem("code");
     let seed = localStorage.getItem("seed");
     let rngSeed = Math.random();
-      this.setState({
-        code: code || "",
-        seed: seed || (localStorage.setItem("seed", rngSeed), rngSeed)
-      });
+    seed = seed || (localStorage.setItem("seed", rngSeed), rngSeed);
+    
+    this.setState({
+      code: code || "",
+      seed,
+      game: new Game(this, seed)
+    }, () => {
+      this.centerPlayer();
+    });
   }
 
   render () {
+    if(!this.state.game) {
+      return null;
+    }
+
+    if(this.state.resetting) {
+      return "Resetting...";
+    }
 
     let runGame = () => {
       try {
@@ -49,7 +63,7 @@ class App extends Component {
       let f = Function("return " + this.state.code);
       /* eslint-enable */
 
-      game.run(this, f());
+      this.state.game.run(f());
 
       } catch (ex) {
         console.error(ex);
@@ -58,20 +72,19 @@ class App extends Component {
     }
 
     let stopGame = () => {
-      game.stop();
+      this.state.game.stop();
     }
 
     let step = () => {
       /* eslint-disable no-new-func */
       try {
-        game.playerFunc = Function("return " + this.state.code)();
+        this.state.game.setPlayerFunc(Function("return " + this.state.code)());
       } catch (x) {
         console.error(x);
       }
-      game.appComponent = this;
 
       /* eslint-enable */
-      requestAnimationFrame((timestamp) => game.step(timestamp));
+      requestAnimationFrame((timestamp) => this.state.game.step(timestamp));
     }
 
     let updateCode = (code) => {
@@ -147,6 +160,64 @@ class App extends Component {
       "right": faAngleRight,
       "down": faAngleDown
     }
+
+    let gameOutput = (<div className="GameOutput">
+    <MapDisplay
+      tiles={this.state.game.world.map.tiles}
+      originX={this.state.mapOriginX}
+      originY={this.state.mapOriginY}
+    />
+    <Tabs
+      page={this.state.page}
+      onTabChange={page => this.setState({page})}
+    >
+      <Tab page="instructions">
+        <p>
+        Your code must evaluate to a function or lambda which will be called every
+        step (every frame) with two arguments.  The first argument is 'game', which
+        we will get onto in a moment.  The second argument is 'timestamp', which is
+        simply a high-resolution timer measuring milliseconds with a sub-millisecond
+        resolution (i.e floating point millisecond timer).
+        </p>
+        <p>
+          The 'game' argument contains an API for controlling the player as well as
+          getting information about the environment.  The API is not currently well
+          documented.  If you want to contribute API documentation, please see the git
+          repo at <a href="https://github.com/cjbrowne/rpg">GitHub</a> and pitch in!
+        </p>
+        <p>
+          Listen for events by calling 'game.when(event)', which returns a 'When' object.
+          The 'event' argument is a string representing the event to listen for.
+          The 'When' object has the following functions:
+          <ul>
+            <li>do(callback): add 'callback' to the list of callbacks to call when the event occurs</li>
+            <li>whenever(filter): add 'filter' to the list of filters.  filter must be a function, that returns truthy if the callback chain should be executed.</li>
+            <li>dispatch(event): immediately run the callback chain if the predicates match, with the given event argument (object containing 'event', a string representing the event, and 'payload', an event-specific variable of any type</li>
+          </ul>
+          Events include:
+          <ul>
+            <li>enemy.appears: event triggered by an enemy appearing on the same tile as the player</li>
+          </ul>
+        </p>
+      </Tab>
+      <Tab page="status">
+        <StatusPage 
+          {...this.state.game.player}
+        />
+      </Tab>
+    </Tabs>
+  </div>);
+
+  let resetGame = () => {
+    this.state.game.reset();
+  }
+
+  if(this.state.game.gameOver) {
+    gameOutput = <div className="GameOver">
+      <div className="Label">Game Over</div>
+      <div className="Control"><button className="ResetGame" onClick={resetGame}>Reset</button></div>
+      </div>;
+  }
     
     return (
       <div className="App">
@@ -178,65 +249,7 @@ class App extends Component {
               </button>
           </div>
         </div>
-        <div className="GameOutput">
-          <MapDisplay
-            tiles={this.state.game.world.map.tiles}
-            originX={this.state.mapOriginX}
-            originY={this.state.mapOriginY}
-          />
-          <Tabs
-            page={this.state.page}
-            onTabChange={page => this.setState({page})}
-          >
-            <Tab page="instructions">
-              <p>
-              Your code must evaluate to a function or lambda which will be called every
-              step (every frame) with two arguments.  The first argument is 'game', which
-              we will get onto in a moment.  The second argument is 'timestamp', which is
-              simply a high-resolution timer measuring milliseconds with a sub-millisecond
-              resolution (i.e floating point millisecond timer).
-              </p>
-              <p>
-                The 'game' argument contains an API for controlling the player as well as
-                getting information about the environment.  The API is not currently well
-                documented.  If you want to contribute API documentation, please see the git
-                repo at <a href="https://github.com/cjbrowne/rpg">GitHub</a> and pitch in!
-              </p>
-              <p>
-                Listen for events by calling 'game.when(event)', which returns a 'When' object.
-                The 'event' argument is a string representing the event to listen for.
-                The 'When' object has the following functions:
-                <ul>
-                  <li>do(callback): add 'callback' to the list of callbacks to call when the event occurs</li>
-                  <li>whenever(filter): add 'filter' to the list of filters.  filter must be a function, that returns truthy if the callback chain should be executed.</li>
-                  <li>dispatch(event): immediately run the callback chain if the predicates match, with the given event argument (object containing 'event', a string representing the event, and 'payload', an event-specific variable of any type</li>
-                </ul>
-                Events include:
-                <ul>
-                  <li>enemy.appears: event triggered by an enemy appearing on the same tile as the player</li>
-                </ul>
-              </p>
-            </Tab>
-            <Tab page="status">
-              <div className="StatusPage">
-                <div className="HealthBar">
-                  Health: {this.state.game.player.health}/{this.state.game.player.maxHealth}
-                </div>
-                <div className="EnergyBar">
-                  Energy: {this.state.game.player.energy}/{this.state.game.player.maxEnergy}
-                </div>
-                <div className="Location">
-                  Location: ({this.state.game.world.map.playerPos.x},{this.state.game.world.map.playerPos.y})<br/>
-                  Terrain: {this.state.game.player.location.terrain.description}<br/>
-                  Surroundings: {_.map(this.state.game.player.location.objects, "name").join(" ") || "Open space"}
-                </div>
-                <div className="Combat">
-                  {this.state.game.player.underAttack ? <div className="AttackWarning">Under Attack!!!</div> : null}
-                </div>
-              </div>
-            </Tab>
-          </Tabs>
-        </div>
+        {gameOutput}
         <AceEditor 
           mode="javascript"
           theme="dracula"
@@ -265,6 +278,9 @@ class App extends Component {
           </button>
           <button onClick={step}>
             Step
+          </button>
+          <button onClick={resetGame}>
+            Reset
           </button>
         </div>
       </div>

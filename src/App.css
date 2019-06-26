@@ -68,6 +68,20 @@
   height: 100%;
 }
 
+.GameOver {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.GameOver .Label {
+  padding: 1rem;
+  color: #f33;
+}
+
 .StatusPage {
   padding: 1rem;
 }

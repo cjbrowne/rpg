@@ -37,3 +37,9 @@
 .MapTile.ROCK {
     background-color: #999;
 }
+
+.MapTile .Enemy {
+    font-size: 10pt;
+    padding: 2px;
+    color: #f00;
+}
