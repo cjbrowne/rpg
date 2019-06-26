@@ -6,7 +6,7 @@ import './App.css';
 
 import _ from 'lodash';
 
-import game from './game/';
+import game from './game/index';
 
 import MapDisplay from './components/MapDisplay';
 
@@ -201,6 +201,20 @@ class App extends Component {
                 getting information about the environment.  The API is not currently well
                 documented.  If you want to contribute API documentation, please see the git
                 repo at <a href="https://github.com/cjbrowne/rpg">GitHub</a> and pitch in!
+              </p>
+              <p>
+                Listen for events by calling 'game.when(event)', which returns a 'When' object.
+                The 'event' argument is a string representing the event to listen for.
+                The 'When' object has the following functions:
+                <ul>
+                  <li>do(callback): add 'callback' to the list of callbacks to call when the event occurs</li>
+                  <li>whenever(filter): add 'filter' to the list of filters.  filter must be a function, that returns truthy if the callback chain should be executed.</li>
+                  <li>dispatch(event): immediately run the callback chain if the predicates match, with the given event argument (object containing 'event', a string representing the event, and 'payload', an event-specific variable of any type</li>
+                </ul>
+                Events include:
+                <ul>
+                  <li>enemy.appears: event triggered by an enemy appearing on the same tile as the player</li>
+                </ul>
               </p>
             </Tab>
             <Tab page="status">

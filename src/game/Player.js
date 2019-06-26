@@ -30,6 +30,8 @@ export class Player {
     underAttack = false;
     armor = 0;
 
+    static MAX_SPEED = 15;
+
     constructor(start) {
         this.inventory = new Inventory();
         this.health = 100;

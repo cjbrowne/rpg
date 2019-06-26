@@ -11,7 +11,6 @@ export class When {
     
     do(cb) {
         this.callbacks.push(cb);
-        console.log("added a callback", this.callbacks.length);
         return this;
     }
 

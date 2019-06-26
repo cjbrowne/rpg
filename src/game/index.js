@@ -9,6 +9,10 @@ import {
     generate2d
 } from './arrayutil';
 
+import {
+    Vector2
+} from '../bettermath/index';
+
 import EventDispatcher from './EventDispatcher';
 
 class MapObject {
@@ -216,7 +220,13 @@ class Game {
     publicApi = {
         movePlayer: (x, y) => {
             if(_.isInteger(x) && _.isInteger(y)) {
-                this.world.map.movePlayer(x, y);
+                let v = new Vector2(x, y);
+                console.log(`Player trying to move at a rate of ${v.magnitude}`, v);
+                if(v.magnitude > Player.MAX_SPEED) {
+                    v = v.normalize().magnify(Player.MAX_SPEED).floor();
+                    console.log(`Moving player ${v.magnitude} instead`);
+                }
+                this.world.map.movePlayer(v.x, v.y);
                 this.player.location = this.world.map.tiles[this.world.map.playerPos.x][this.world.map.playerPos.y];
                 this.player.underAttack = (this.player.location.enemy !== null);
                 return true;
