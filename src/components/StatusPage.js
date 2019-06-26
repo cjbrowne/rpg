@@ -34,6 +34,11 @@ export default class StatusPage extends Component {
                   }}>
                       {this.props.energy}/{this.props.maxEnergy}
                   </div>
+                  <div className="XP Bar" style={{
+                      width: ((this.props.xp / this.props.nextLevelXp) * BAR_WIDTH) + "px"
+                  }}>
+                      {this.props.xp}/{this.props.nextLevelXp}
+                  </div>
               </div>
               <div className="Context">
                   <div className="Location">

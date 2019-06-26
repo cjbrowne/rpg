@@ -202,6 +202,7 @@ class App extends Component {
       </Tab>
       <Tab page="status">
         <StatusPage 
+          nextLevelXp={this.state.game.player.nextLevelXp}
           {...this.state.game.player}
         />
       </Tab>

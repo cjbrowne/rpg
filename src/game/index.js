@@ -230,7 +230,6 @@ class Game {
                 }
                 this.world.map.movePlayer(v.x, v.y);
                 this.player.location = this.world.map.tiles[this.world.map.playerPos.x][this.world.map.playerPos.y];
-                this.player.underAttack = (this.player.location.enemy !== null);
                 return true;
             } else {
                 return false;
@@ -240,6 +239,9 @@ class Game {
             if(this.player.energy >= ATTACK_ENERGY) {
                 if(this.player.location.enemy !== null) {
                     this.player.location.enemy.takeDamage(this.player.swingWeapon());
+                    if(this.player.location.enemy.isDead) {
+                        this.player.reward(this.player.location.enemy);
+                    }
                 }
                 this.player.energy = Math.max(0, this.player.energy - ATTACK_ENERGY);
             }
@@ -271,7 +273,6 @@ class Game {
         this.player = new Player(start);
         this.player.load();
         this.player.location = this.world.map.tiles[playerPos.x][playerPos.y];
-        this.player.underAttack = (this.world.map.playerTile.enemy !== null);
 
         this.eventDispatcher = new EventDispatcher();
         this.appComponent = appComponent;
@@ -302,7 +303,6 @@ class Game {
             let start = this.world.map.addPlayer(playerPos.x, playerPos.y);
             this.player = new Player(start);
             this.player.location = this.world.map.tiles[playerPos.x][playerPos.y];
-            this.player.underAttack = (this.world.map.playerTile.enemy !== null);
     
             this.save();
     
@@ -318,7 +318,7 @@ class Game {
     }
 
     decorateApi() {
-        _.merge(this.publicApi, {
+        this.publicApi = _.merge(this.publicApi, {
             underAttack: this.player.underAttack
         });
     }
@@ -343,7 +343,6 @@ class Game {
             if(!this.player.underAttack) {
                 this.eventDispatcher.dispatch("enemy.appears", this.player.location.enemy);
             }
-            this.player.underAttack = true;
             this.stepCombat();
         }
 
