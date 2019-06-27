@@ -99,4 +99,10 @@ export class Player {
             this.levelUp();
         }
     }
+
+    swingWeapon() {
+        // todo: base damage should be determined from the equipped weapon and RNG
+        let baseDamage = 1;
+        return baseDamage + (this.strength * 1.15);
+    }
 }

@@ -107,22 +107,26 @@ class App extends Component {
       switch(direction) {
         case "up":
           this.setState({
-            mapOriginY: Math.max(0, this.state.mapOriginY-amount)
+            mapOriginY: Math.max(0, this.state.mapOriginY-amount),
+            followPlayer: false
           })
           break;
         case "left":
           this.setState({
-            mapOriginX: Math.max(0, this.state.mapOriginX-amount)
+            mapOriginX: Math.max(0, this.state.mapOriginX-amount),
+            followPlayer: false
           })
           break;
         case "down":
           this.setState({
-            mapOriginY: Math.min(this.state.mapOriginY+amount, this.state.game.world.map.height-16)
+            mapOriginY: Math.min(this.state.mapOriginY+amount, this.state.game.world.map.height-16),
+            followPlayer: false
           })
           break;
         case "right":
           this.setState({
-            mapOriginX: Math.min(this.state.mapOriginX+amount, this.state.game.world.map.width-16)
+            mapOriginX: Math.min(this.state.mapOriginX+amount, this.state.game.world.map.width-16),
+            followPlayer: false
           })
           break;
         default: 
@@ -241,7 +245,12 @@ class App extends Component {
               <FontAwesomeIcon icon={faCrosshairs} />
             </button>
             <button
-              onClick={()=>{this.setState({followPlayer:!this.state.followPlayer})}}
+              onClick={()=>{
+                if(!this.state.followPlayer) {
+                  this.centerPlayer();
+                }
+                this.setState({followPlayer:!this.state.followPlayer});
+              }}
               className="FollowPlayer">
                 <FontAwesomeIcon 
                   icon={this.state.followPlayer ? faCompass : farCompass}

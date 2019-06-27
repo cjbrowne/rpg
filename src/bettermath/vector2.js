@@ -26,7 +26,6 @@ export default class Vector2 {
 
     // makes this vector @scale times longer
     magnify(scale) {
-        console.log(`Magnifying vector (${this.x},${this.y}) by ${scale}`);
         return new Vector2(this.x * scale, this.y * scale);
     }
 
