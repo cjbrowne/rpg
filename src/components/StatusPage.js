@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import _ from 'lodash';
 
-import './StatusPage.scss';
+import './StatusPage.css';
 
 const BAR_WIDTH = 200;
 

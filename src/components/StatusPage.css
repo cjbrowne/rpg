@@ -1,0 +1,72 @@
+.StatusPage {
+  display: grid;
+  grid-template-columns: auto auto;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+.StatusPage .Stats {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-items: center;
+  grid-gap: 5px;
+}
+.StatusPage .Stats .Level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: solid 2px #995f30;
+  background-color: #a5734a;
+  border-radius: 32px;
+  grid-column: 1;
+  font-family: monospace;
+  text-align: center;
+}
+.StatusPage .Stats .NamePlate {
+  grid-column: 1 / 3;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #333;
+  padding: 0.3rem;
+  border-radius: 3px;
+}
+.StatusPage .Stats .Stat.Label {
+  grid-column: 1;
+  padding: 0 1.5rem;
+  justify-self: left;
+}
+.StatusPage .Stats .Stat.Value {
+  grid-column: 2;
+}
+.StatusPage .Stats .Context {
+  background-color: #252;
+  padding: 1rem;
+  grid-column: 1 / 3;
+}
+
+.StatusPage .Dynamics {
+  padding: 1rem;
+  align-self: start;
+}
+.StatusPage .Dynamics .Bar {
+  height: 16px;
+  font-size: 10pt;
+  color: #000;
+  text-align: right;
+}
+.StatusPage .Dynamics .Health {
+  background-color: #0f0;
+}
+.StatusPage .Dynamics .Energy {
+  background-color: #ff0;
+}
+
+.StatusPage .Dynamics .XP {
+  background-color: #a131bd;
+}
